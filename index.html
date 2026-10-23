@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f7f2">
+  <title>Rollcall — attendance, made easy</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <div class="campus-layout">
+      <aside class="campus-sidebar" aria-label="Campus dashboard navigation">
+        <a class="brand" href="#" aria-label="Rollcall home">
+          <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span>rollcall<span class="brand-period">.</span></span>
+        </a>
+        <div class="sidebar-label">CAMPUS</div>
+        <span class="sidebar-link is-current"><span class="sidebar-icon" aria-hidden="true">▦</span> Student desk</span>
+        <div class="sidebar-note">
+          <span class="sidebar-note-mark" aria-hidden="true">✳</span>
+          <p>Show up, learn lots.</p>
+        </div>
+        <div class="sidebar-bottom">
+          <span class="campus-pin" aria-hidden="true">⌖</span>
+          <span>YOUR CAMPUS</span>
+          <strong>Learning Hall</strong>
+        </div>
+      </aside>
+
+      <div class="campus-main">
+        <header class="topbar">
+          <div class="mobile-brand">
+            <a class="brand" href="#" aria-label="Rollcall home">
+              <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+              <span>rollcall<span class="brand-period">.</span></span>
+            </a>
+          </div>
+          <div class="topbar-context">
+            <span class="campus-breadcrumb">CAMPUS <span aria-hidden="true">/</span> STUDENT DESK</span>
+            <span class="today-label" id="today-label"></span>
+          </div>
+          <div class="topbar-right">
+            <div class="role-switch" role="group" aria-label="Choose your view">
+              <button class="role-button is-active" data-role="student" aria-pressed="true">Student</button>
+              <button class="role-button" data-role="teacher" aria-pressed="false">Teacher</button>
+            </div>
+            <button class="avatar" type="button" aria-label="Student profile">A</button>
+          </div>
+        </header>
+
+    <p id="storage-warning" class="storage-warning is-hidden" role="status" aria-live="polite"></p>
+
+    <main id="app-main">
+      <section id="student-view" class="view">
+        <div class="welcome-row">
+          <div>
+            <p class="eyebrow">MONDAY, YOUR ATTENDANCE LOOKS GOOD</p>
+            <h1>Hey, Aanya <span class="wave" aria-hidden="true">✳</span></h1>
+            <p class="subheading">A little check-in goes a long way. Here's your semester so far.</p>
+          </div>
+          <button class="button button-primary" id="go-to-checkin"><span aria-hidden="true">＋</span> Mark attendance</button>
+        </div>
+
+        <section class="summary-grid" aria-label="Attendance summary">
+          <article class="card attendance-card">
+            <div class="card-topline">
+              <div>
+                <p class="card-label">Overall attendance</p>
+                <p class="card-caption">Across all your classes</p>
+              </div>
+              <span class="sparkle-badge" aria-hidden="true">✳</span>
+            </div>
+            <div class="overall-metric">
+              <span class="big-number" id="overall-percent">82%</span>
+              <span class="status-pill" id="overall-status">On track</span>
+            </div>
+            <div class="progress-track" role="progressbar" aria-label="Overall attendance percentage" aria-valuemin="0" aria-valuemax="100" id="overall-progress">
+              <span class="progress-fill" id="overall-progress-fill"></span>
+              <span class="target-marker" aria-hidden="true"></span>
+            </div>
+            <div class="progress-labels"><span>0%</span><span>75% minimum</span><span>100%</span></div>
+            <p class="attendance-note" id="overall-note"></p>
+          </article>
+
+          <article class="card stat-card stat-attended">
+            <span class="stat-icon" aria-hidden="true">✓</span>
+            <p class="card-label">Classes attended</p>
+            <p class="stat-number" id="attended-total">54</p>
+            <p class="card-caption">You're showing up!</p>
+          </article>
+          <article class="card stat-card stat-missed">
+            <span class="stat-icon" aria-hidden="true">·</span>
+            <p class="card-label">Classes missed</p>
+            <p class="stat-number" id="missed-total">12</p>
+            <p class="card-caption">There's always a next class</p>
+          </article>
+        </section>
+
+        <section class="course-section">
+          <div class="section-heading">
+            <div><p class="eyebrow">YOUR SEMESTER</p><h2>By subject</h2></div>
+            <button class="text-button" id="show-all-courses">All subjects <span aria-hidden="true">→</span></button>
+          </div>
+          <div class="course-grid" id="course-grid"></div>
+        </section>
+        <section class="notifications-section" id="notifications-section" aria-labelledby="notifications-title">
+          <div class="section-heading">
+            <div class="notification-heading">
+              <span class="notification-bell" aria-hidden="true">⌁</span>
+              <div><p class="eyebrow">A LITTLE HEADS-UP</p><h2 id="notifications-title">Attendance alerts</h2></div>
+            </div>
+            <span class="notification-count" id="notification-count" aria-label="Subjects below the attendance target">0</span>
+          </div>
+          <div class="notification-list" id="notification-list" aria-live="polite"></div>
+        </section>
+        <div class="dashboard-tools">
+          <section class="card dashboard-panel attendance-plan-panel" aria-labelledby="attendance-plan-title">
+            <div class="panel-heading">
+              <span class="panel-icon plan-icon" aria-hidden="true">◎</span>
+              <div><p class="eyebrow">YOUR 75% GAME PLAN</p><h2 id="attendance-plan-title">Know your wiggle room</h2></div>
+            </div>
+            <p class="panel-description">Minimum classes to attend in your next four sessions to stay above 75%. Below target? See your recovery goal.</p>
+            <ul class="attendance-plan" id="attendance-plan"></ul>
+          </section>
+          <section class="card dashboard-panel timetable-panel" aria-labelledby="timetable-title">
+            <div class="panel-heading">
+              <span class="panel-icon timetable-panel-icon" aria-hidden="true">▦</span>
+              <div><p class="eyebrow">SAMPLE WEEK</p><h2 id="timetable-title">Your timetable</h2></div>
+            </div>
+            <p class="panel-description">A sample class schedule to help plan your week.</p>
+            <ul class="timetable-list" id="timetable-list"></ul>
+          </section>
+        </div>
+        <section class="card absence-request-panel" aria-labelledby="absence-request-title">
+          <div class="panel-heading">
+            <span class="panel-icon absence-request-icon" aria-hidden="true">✉</span>
+            <div><p class="eyebrow">MISSED A CLASS?</p><h2 id="absence-request-title">Request an excused absence</h2></div>
+          </div>
+          <p class="absence-request-intro">For a workshop, hackathon, college event, or medical absence, submit a request for the class date. Your teacher can review it from the selected class view.</p>
+          <form id="absence-request-form" class="absence-request-form">
+            <div class="absence-form-grid">
+              <div>
+                <label class="field-label" for="absence-group">Year, branch, and section</label>
+                <select class="form-control" id="absence-group" required></select>
+              </div>
+              <div>
+                <label class="field-label" for="absence-course">Subject</label>
+                <select class="form-control" id="absence-course" required></select>
+              </div>
+              <div>
+                <label class="field-label" for="absence-date">Class date</label>
+                <input class="form-control" id="absence-date" type="date" required>
+              </div>
+              <div>
+                <label class="field-label" for="absence-reason">Reason</label>
+                <select class="form-control" id="absence-reason" required>
+                  <option value="">Choose a reason</option>
+                  <option value="College event">College event</option>
+                  <option value="Hackathon or workshop">Hackathon or workshop</option>
+                  <option value="Medical absence">Medical absence</option>
+                  <option value="Other approved activity">Other approved activity</option>
+                </select>
+              </div>
+              <div class="absence-file-field">
+                <label class="field-label" for="absence-document">Supporting letter or certificate (demo)</label>
+                <input class="form-control absence-file-input" id="absence-document" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required>
+                <span class="field-hint" id="absence-file-hint">Supporting document attachment · preview only</span>
+              </div>
+            </div>
+            <button class="button button-primary" type="submit">Send demo request</button>
+            <p class="inline-message absence-form-message" id="absence-form-message" role="status" aria-live="polite"></p>
+          </form>
+          <div class="student-absence-requests" id="student-absence-requests" aria-live="polite"></div>
+        </section>
+        <div class="student-footer"><span class="footer-flower" aria-hidden="true">✿</span> Small steps, strong semesters.</div>
+      </section>
+
+      <section id="checkin-view" class="view is-hidden">
+        <div class="welcome-row compact-welcome">
+          <div><p class="eyebrow">YOU'RE IN THE RIGHT PLACE</p><h1>Mark attendance</h1><p class="subheading">Scan your class QR or pop in the fallback code from your teacher.</p></div>
+          <button class="button button-quiet" id="back-to-dashboard">← Dashboard</button>
+        </div>
+        <div class="checkin-layout">
+          <section class="card checkin-card">
+            <div class="step-heading"><span class="step-number">1</span><div><h2>Choose your class</h2><p>Select your year, branch, section, and subject.</p></div></div>
+            <label class="field-label" for="student-group-select">Year, branch, and section (a scanned QR selects these)</label>
+            <select id="student-group-select" class="form-control"></select>
+            <label class="field-label subject-select-label" for="course-select">Subject</label>
+            <select id="course-select" class="form-control"></select>
+            <div class="divider"></div>
+            <div class="step-heading"><span class="step-number">2</span><div><h2>Scan or enter your live code</h2><p>Use the QR or short code currently shown in class.</p></div></div>
+            <div class="scanner-panel" id="scanner-panel">
+              <div class="scanner-placeholder" id="scanner-placeholder">
+                <span class="scan-icon" aria-hidden="true">▦</span>
+                <p>Ready when you are</p>
+                <span>Camera access is only used to read the class QR.</span>
+              </div>
+              <video id="scanner-video" class="is-hidden" playsinline muted aria-label="Camera QR code preview"></video>
+            </div>
+            <div class="scanner-actions">
+              <button class="button button-secondary" id="start-scan"><span aria-hidden="true">▦</span> Scan QR code</button>
+              <button class="text-button is-hidden" id="stop-scan">Stop camera</button>
+            </div>
+            <p class="inline-message" id="scan-message" role="status" aria-live="polite"></p>
+            <div class="or-divider"><span>or enter the live code</span></div>
+            <form id="checkin-form">
+              <label class="field-label" for="fallback-code">Live class code</label>
+              <div class="code-row">
+                <input class="form-control code-input" id="fallback-code" name="code" placeholder="e.g. ROLL-A7K2" autocomplete="off" required>
+                <button class="button button-primary" id="sign-in-button" type="submit">Sign in</button>
+              </div>
+            </form>
+            <button class="button button-signout is-hidden" id="sign-out-button" type="button">Sign out of this class</button>
+            <p class="inline-message form-message" id="form-message" role="status" aria-live="polite"></p>
+          </section>
+          <aside class="card checkin-aside">
+            <span class="aside-illustration" aria-hidden="true">✳</span>
+            <p class="eyebrow">A FRIENDLY REMINDER</p>
+            <h2>You're doing great.</h2>
+            <p>Your attendance is a journey, not a perfect streak. Each class you show up for makes a difference.</p>
+            <div class="aside-target"><span class="target-dot"></span><span>Keep an eye on your <strong>75% target</strong></span></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="teacher-view" class="view is-hidden">
+        <div class="welcome-row">
+          <div><p class="eyebrow">YOUR CLASSROOM, IN SYNC</p><h1>Good morning, Professor <span class="wave" aria-hidden="true">✳</span></h1><p class="subheading">Open a session and let your students check in.</p></div>
+          <span class="teacher-date" id="teacher-date"></span>
+        </div>
+        <section class="teacher-welcome card">
+          <div class="teacher-welcome-icon" aria-hidden="true">✿</div>
+          <div><p class="eyebrow">LIVE PULSE CHECK-IN</p><h2>One less thing to keep track of.</h2><p>Students scan once or type the short code. Their code refreshes every 30 seconds, so old screenshots expire and proxying is less convenient.</p></div>
+        </section>
+        <section class="course-section teacher-courses">
+          <p class="session-safety-note"><strong>Live Pulse:</strong> quick check-in, fewer proxies. Each class QR and code refreshes every 30 seconds. This discourages sharing old screenshots, but can't prevent someone relaying a live code in this local demo.</p>
+          <p class="inline-message" id="teacher-message" role="status" aria-live="polite"></p>
+          <div class="teacher-workspace-heading">
+            <div class="section-heading"><div><p class="eyebrow">TEACHER DESK</p><h2>Choose today's class</h2></div><span class="class-count" id="class-count"></span></div>
+            <label class="field-label" for="teacher-group-select">Class · year, branch, and section</label>
+            <select id="teacher-group-select" class="form-control teacher-course-select"></select>
+            <label class="field-label teacher-subject-label" for="teacher-course-select">Subject in this class</label>
+            <select id="teacher-course-select" class="form-control teacher-course-select"></select>
+          </div>
+          <div id="teacher-course-list" class="teacher-course-list"></div>
+          <section class="card teacher-tracker" aria-labelledby="tracker-title">
+            <div class="section-heading tracker-heading">
+              <div><p class="eyebrow">CLASS REGISTER · DEMO DATA</p><h2 id="tracker-title">Student tracker</h2></div>
+              <span class="tracker-count" id="tracker-count"></span>
+            </div>
+            <p class="tracker-description">Sample students for the selected class. Device signals are fictional review prompts, not proof of proxy attendance.</p>
+            <div class="tracker-table-wrap">
+              <table class="tracker-table">
+                <thead><tr><th scope="col">Student</th><th scope="col">ID</th><th scope="col">Attendance</th><th scope="col">Today</th><th scope="col">Device signal · demo</th><th scope="col">Identity check · demo</th><th scope="col"><span class="visually-hidden">Demo action</span></th></tr></thead>
+                <tbody id="tracker-rows"></tbody>
+              </table>
+            </div>
+          </section>
+          <section class="card teacher-absence-panel" aria-labelledby="teacher-absence-title">
+            <div class="section-heading tracker-heading">
+              <div><p class="eyebrow">TEACHER REVIEW · SELECTED CLASS</p><h2 id="teacher-absence-title">Excused absence requests</h2></div>
+              <span class="tracker-count" id="absence-request-count"></span>
+            </div>
+            <p class="tracker-description">Review the class date and reason. Approval adds a demo attendance credit for that date; this is not a real certificate verification.</p>
+            <p class="field-hint teacher-document-hint">Supporting document attachments are preview-only in this version.</p>
+            <div class="teacher-absence-list" id="teacher-absence-list" aria-live="polite"></div>
+          </section>
+        </section>
+      </section>
+    </main>
+    <footer class="app-footer"><span>rollcall<span class="brand-period">.</span> · LEARNING HALL</span><span>Made for showing up.</span></footer>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
